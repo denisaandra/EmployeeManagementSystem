@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.StyledEditorKit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/")
@@ -39,7 +42,8 @@ public class EmployeeController {
     // Update Employee
     @PutMapping("/employees/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
-        Employee existingEmployee = this.employeeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Employee does not exist with this id: " + id));
+        Employee existingEmployee = this.employeeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee does not exist with this id: " + id));
         existingEmployee.setfirstName(employeeDetails.getfirstName());
         existingEmployee.setLastName(employeeDetails.getLastName());
         existingEmployee.setEmailId(employeeDetails.getEmailId());
@@ -47,6 +51,19 @@ public class EmployeeController {
         Employee updatedEmployee = this.employeeRepository.save(existingEmployee);
 
         return ResponseEntity.ok(updatedEmployee);
+    }
+
+    // Delete Employee
+    @DeleteMapping("/employees/{id}")
+    public ResponseEntity<Map<String, Boolean>> deleteEmployee(@PathVariable Long id) {
+
+        Employee existingEmployee = this.employeeRepository.findById(id)
+                .orElseThrow( () -> new ResourceNotFoundException("Employee does not exist with this id: " + id));
+
+        employeeRepository.delete(existingEmployee);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("deleted", true);
+        return  ResponseEntity.ok(response);
     }
 
 
